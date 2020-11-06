@@ -1,0 +1,28 @@
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: auto;
+    padding: 5px;
+    width: 600px;
+    height: 600px;
+    background-color: dimgrey;
+}
+
+
+
+
+.grid div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    background-color: bisque;
+    width: 135px;
+    height: 135px;
+    font-family: sans;
+    font-size: 60px;
+    color: black;
+    font-weight: bold;
+    border-radius: 4px;
+
+}
