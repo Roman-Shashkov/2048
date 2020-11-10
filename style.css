@@ -1,3 +1,9 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .grid {
     display: flex;
     flex-wrap: wrap;
@@ -9,7 +15,29 @@
 }
 
 
+.count-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 8px;
+    width: fit-content;
+    padding: 0 10px;
+    margin: 17px;
+    background-color: antiquewhite;}
 
+.count-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: dimgray;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#count {
+    font-size: 25px;
+    font-weight: bold;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+}
 
 .grid div {
     display: flex;
@@ -20,9 +48,14 @@
     width: 135px;
     height: 135px;
     font-family: sans;
-    font-size: 60px;
-    color: black;
+    font-size: 55px;
     font-weight: bold;
     border-radius: 4px;
 
+}
+
+#result {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 10px;
 }

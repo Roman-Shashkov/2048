@@ -2,12 +2,13 @@ document.addEventListener('DOMContentLoaded', () => startGame(4))
 
 function startGame(fileldSize) {
     
-    let gridView = document.querySelector('.grid');
+    let gridView = document.querySelector('.grid')
     let countView = document.querySelector('#count')
     let resultView = document.querySelector('#result')
-    let width = fileldSize;
+    let width = fileldSize
     let squares = new Array()
-
+    let count = 0;
+    
     //создаю игровое поле
 
     function createField() {
@@ -23,12 +24,15 @@ function startGame(fileldSize) {
     }
     createField();
 
+   
+
     //генерирую случайные числа
 
     function generateRandomNumbers() {
         randomNumber = Math.floor(Math.random() * squares.length)
         if (squares[randomNumber].innerHTML == '') {
             squares[randomNumber].innerHTML = Math.floor(Math.random() * 10) == 9 ? 4 : 2
+            checkForStop()
         } else {
             generateRandomNumbers()
         }
@@ -72,7 +76,7 @@ function startGame(fileldSize) {
                 let rowArr = [+totalOne, +totalTwo, +totalThree, +totalFour]
 
                 let filteredRowArr = rowArr.filter (num => num)
-
+                
                 let empty = 4 - filteredRowArr.length
                 let zeroes = Array(empty).fill('')
 
@@ -86,16 +90,82 @@ function startGame(fileldSize) {
         }
     } 
 
+    //передвижение плиток вниз
+
+    function swipeDown () {
+        for (let i = 0; i < 4; i++) {
+            let totalOne = squares[i].innerHTML
+            let totalTwo = squares[i + width].innerHTML
+            let totalThree = squares[i + (width * 2)].innerHTML
+            let totalFour = squares[i + (width * 3)].innerHTML
+            let colArr = [+totalOne, +totalTwo, +totalThree, +totalFour]
+
+            let filteredColArr = colArr.filter (num => num)
+            let empty = 4 - filteredColArr.length
+            let zeroes = Array (empty).fill ('')
+
+            let newColArr = zeroes.concat (filteredColArr)
+
+            squares[i].innerHTML = newColArr [0]
+            squares[i + width].innerHTML = newColArr [1]
+            squares[i + (width * 2)].innerHTML = newColArr [2]
+            squares[i + (width * 3)].innerHTML = newColArr [3]
+        }
+    }
+
+    //передвижение плиток вверх
+
+    function swipeUp () {
+        for (let i = 0; i < 4; i++) {
+            let totalOne = squares[i].innerHTML
+            let totalTwo = squares[i + width].innerHTML
+            let totalThree = squares[i + (width * 2)].innerHTML
+            let totalFour = squares[i + (width * 3)].innerHTML
+            let colArr = [+totalOne, +totalTwo, +totalThree, +totalFour]
+
+            let filteredColArr = colArr.filter (num => num)
+            let empty = 4 - filteredColArr.length
+            let zeroes = Array (empty).fill ('')
+
+            let newColArr = filteredColArr.concat (zeroes)
+
+            squares[i].innerHTML = newColArr [0]
+            squares[i + width].innerHTML = newColArr [1]
+            squares[i + (width * 2)].innerHTML = newColArr [2]
+            squares[i + (width * 3)].innerHTML = newColArr [3]
+        }
+    }
+
     //сложение строк
 
     function concatRow () {
         for (let i = 0; i < 15; i++) {
             if ((i % 4 !== 3) && squares[i].innerHTML === squares[i + 1].innerHTML) {
-                let concatTotal = parseInt(squares[i].innerHTML) + parseInt(squares[i + 1].innerHTML)
+                let concatTotal = Number(squares[i].innerHTML) + Number(squares[i + 1].innerHTML)
                 squares[i].innerHTML = concatTotal
                 squares[i + 1].innerHTML = 0
+                count += concatTotal
+                countView.innerHTML = count
             }
         }
+        checkNumber()
+        
+    }
+
+    //сложение столбцов
+
+    function concatCol () {
+        for (let i = 0; i < 12; i++) {
+            if (squares[i].innerHTML === squares[i + width].innerHTML) {
+                let concatTotal = Number(squares[i].innerHTML) + Number(squares[i + width].innerHTML)
+                squares[i].innerHTML = concatTotal
+                squares[i + width].innerHTML = 0
+                count += concatTotal
+                countView.innerHTML = count
+            }
+        }
+        checkNumber()
+        
     }
 
     //назначение клавиш
@@ -105,6 +175,10 @@ function startGame(fileldSize) {
             keyRight()
         } else if (e.key === 'ArrowLeft' || e.key === 'a') {
             keyLeft()
+        } else if (e.key === 'ArrowDown' || e.key === 's') {
+            keyDown ()
+        } else if (e.key === 'ArrowUp' || e.key === 'w') {
+            keyUp ()
         }
     }
    
@@ -124,10 +198,54 @@ function startGame(fileldSize) {
         generateRandomNumbers()
     }
 
+    function keyDown() {
+        swipeDown ()
+        concatCol ()
+        swipeDown ()
+        generateRandomNumbers()
+    }
 
+    function keyUp() {
+        swipeUp ()
+        concatCol ()
+        swipeUp ()
+        generateRandomNumbers()
+    }
 
+    // проверяем наличие числа 2048 для завершения игры
 
+    function checkNumber () {
+        for (let i = 0; i < squares.length; i++) {
+            if (squares[i].innerHTML == 2048){
+                resultView.innerHTML = 'You Win!!!'
+                document.removeEventListener('keyup' , check)
+            }
+        }
+    }
 
+    // проверяем, возможны ли еще ходы для завершения игры
 
+    function checkForStop() {
+        let empty = 0;
+        for (let i = 0; i < squares.length; i++) {
+            if (squares[i].innerHTML == '') {
+                empty++
+            }
+        }
+        for (let i = 0; i < 15; i++) {
+            if ((i % 4 !== 3) && squares[i].innerHTML === squares[i + 1].innerHTML) {
+                empty++
+            }
+        }
+        for (let i = 0; i < 12; i++) {
+            if (squares[i].innerHTML === squares[i + width].innerHTML) {
+                empty++
+            }
+        }
+        if (empty === 0) {
+            resultView.innerHTML = 'Game Over!'
+            document.removeEventListener('keyup', check)
+        }
+    }
 
 }
