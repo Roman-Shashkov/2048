@@ -1,11 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => startGame(4))
 
-function startGame(fileldSize) {
-    
+function startGame(field) {
     let gridView = document.querySelector('.grid')
+    
+    const CHANGE_COLOR = {
+        "": "rgba(238, 228, 218, 0.35)",
+        2: "#eee4da",
+        4: "#eee1c9",
+        8: "#f3b27a",
+        16: "#f69664",
+        32: "#f77c5f",
+        64: "#f75f3b",
+        128: "#edd073",
+        256: "#344d6e",
+        512: "#edc950",
+        1024: "#edc53f",
+        2048: "#edc22e",
+    }
+
+    const CHANGE_FONT = {
+        "": "55px",
+        2: "55px",
+        4: "55px",
+        8: "55px",
+        16: "55px",
+        32: "55px",
+        64: "55px",
+        128: "45px",
+        256: "45px",
+        512: "45px",
+        1024: "40px",
+        2048: "40px",
+    }
     let countView = document.querySelector('#count')
     let resultView = document.querySelector('#result')
-    let width = fileldSize
+    let width = field
     let squares = new Array()
     let count = 0;
     
@@ -14,17 +43,22 @@ function startGame(fileldSize) {
     function createField() {
         for (let i = 0; i < width * width; i++) {
             square = document.createElement('div')
-            square.innerHTML = ''
+            square.textContent = ''
+            changeColor(square)
             gridView.appendChild(square)
             squares.push(square)
-
         }
+        for (let i = 0; i < gridView.children.length; i++){
+            if (squares.length == 16) {
+                gridView.children[i].style.width = '140px'
+                gridView.children[i].style.height = '140px'
+            }
+        }
+        
         generateRandomNumbers()
         generateRandomNumbers()
     }
     createField();
-
-   
 
     //генерирую случайные числа
 
@@ -32,16 +66,24 @@ function startGame(fileldSize) {
         randomNumber = Math.floor(Math.random() * squares.length)
         if (squares[randomNumber].innerHTML == '') {
             squares[randomNumber].innerHTML = Math.floor(Math.random() * 10) == 9 ? 4 : 2
+            changeColor(squares[randomNumber]);
             checkForStop()
         } else {
             generateRandomNumbers()
         }
     }
 
+    //меняю стили
+
+    function changeColor(element) {
+        element.style.backgroundColor = CHANGE_COLOR[element.textContent]
+        element.style.fontSize = CHANGE_FONT[element.textContent]
+      }
+    
     //передвижение плиток вправо
 
     function swipeRight() {
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < width * width; i++) {
             if (i % 4 === 0) {
                 let totalOne = squares[i].innerHTML
                 let totalTwo = squares[i + 1].innerHTML
@@ -61,13 +103,14 @@ function startGame(fileldSize) {
                 squares[i + 2].innerHTML = newRowArr [2]
                 squares[i + 3].innerHTML = newRowArr [3]
             }
+            changeColor(squares[i])
         }
     } 
 
     //передвижение плиток влево
 
     function swipeLeft() {
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < width * width; i++) {
             if (i % 4 === 0) {
                 let totalOne = squares[i].innerHTML
                 let totalTwo = squares[i + 1].innerHTML
@@ -87,19 +130,20 @@ function startGame(fileldSize) {
                 squares[i + 2].innerHTML = newRowArr [2]
                 squares[i + 3].innerHTML = newRowArr [3]
             }
+            changeColor(squares[i])
         }
     } 
 
     //передвижение плиток вниз
 
     function swipeDown () {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < width; i++) {
             let totalOne = squares[i].innerHTML
             let totalTwo = squares[i + width].innerHTML
             let totalThree = squares[i + (width * 2)].innerHTML
             let totalFour = squares[i + (width * 3)].innerHTML
             let colArr = [+totalOne, +totalTwo, +totalThree, +totalFour]
-
+            
             let filteredColArr = colArr.filter (num => num)
             let empty = 4 - filteredColArr.length
             let zeroes = Array (empty).fill ('')
@@ -111,12 +155,15 @@ function startGame(fileldSize) {
             squares[i + (width * 2)].innerHTML = newColArr [2]
             squares[i + (width * 3)].innerHTML = newColArr [3]
         }
+        for (let i = 0; i < width * width; i++) {
+            changeColor(squares[i])
+        }
     }
 
     //передвижение плиток вверх
 
     function swipeUp () {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < width; i++) {
             let totalOne = squares[i].innerHTML
             let totalTwo = squares[i + width].innerHTML
             let totalThree = squares[i + (width * 2)].innerHTML
@@ -133,6 +180,9 @@ function startGame(fileldSize) {
             squares[i + width].innerHTML = newColArr [1]
             squares[i + (width * 2)].innerHTML = newColArr [2]
             squares[i + (width * 3)].innerHTML = newColArr [3]
+        }
+        for (let i = 0; i < width * width; i++) {
+            changeColor(squares[i])
         }
     }
 
@@ -226,23 +276,23 @@ function startGame(fileldSize) {
     // проверяем, возможны ли еще ходы для завершения игры
 
     function checkForStop() {
-        let empty = 0;
+        let count = 0;
         for (let i = 0; i < squares.length; i++) {
             if (squares[i].innerHTML == '') {
-                empty++
+                count++
             }
         }
         for (let i = 0; i < 15; i++) {
             if ((i % 4 !== 3) && squares[i].innerHTML === squares[i + 1].innerHTML) {
-                empty++
+                count++
             }
         }
         for (let i = 0; i < 12; i++) {
             if (squares[i].innerHTML === squares[i + width].innerHTML) {
-                empty++
+                count++
             }
         }
-        if (empty === 0) {
+        if (count === 0) {
             resultView.innerHTML = 'Game Over!'
             document.removeEventListener('keyup', check)
         }
