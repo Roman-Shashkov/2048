@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => startGame(4))
+document.addEventListener('DOMContentLoaded', () => startGame(5))
 
 function startGame(field) {
     let gridView = document.querySelector('.grid')
@@ -32,11 +32,19 @@ function startGame(field) {
         1024: "40px",
         2048: "40px",
     }
+    
     let countView = document.querySelector('#count')
     let resultView = document.querySelector('#result')
     let width = field
     let squares = new Array()
     let count = 0;
+
+    //меняю стили
+
+    function changeColor(element) {
+        element.style.backgroundColor = CHANGE_COLOR[element.textContent]
+        element.style.fontSize = CHANGE_FONT[element.textContent]
+    }
     
     //создаю игровое поле
 
@@ -49,10 +57,8 @@ function startGame(field) {
             squares.push(square)
         }
         for (let i = 0; i < gridView.children.length; i++){
-            if (squares.length == 16) {
-                gridView.children[i].style.width = '140px'
-                gridView.children[i].style.height = '140px'
-            }
+            gridView.children[i].style.width = `calc(100% / ${width} - 4px`
+            gridView.children[i].style.height = `calc(100% / ${width} - 4px`
         }
         
         generateRandomNumbers()
@@ -73,35 +79,30 @@ function startGame(field) {
         }
     }
 
-    //меняю стили
-
-    function changeColor(element) {
-        element.style.backgroundColor = CHANGE_COLOR[element.textContent]
-        element.style.fontSize = CHANGE_FONT[element.textContent]
-      }
     
     //передвижение плиток вправо
 
     function swipeRight() {
         for (let i = 0; i < width * width; i++) {
-            if (i % 4 === 0) {
-                let totalOne = squares[i].innerHTML
-                let totalTwo = squares[i + 1].innerHTML
-                let totalThree = squares[i + 2].innerHTML
-                let totalFour = squares[i + 3].innerHTML
-                let rowArr = [+totalOne, +totalTwo, +totalThree, +totalFour]
+            if (i % width === 0) {
+
+                rowArr = new Array(width);
+
+                for (let j = i; j < i + width; j++) {
+                    rowArr.push(Number(squares[j].innerHTML))
+                }
 
                 let filteredRowArr = rowArr.filter (num => num)
 
-                let empty = 4 - filteredRowArr.length
+                let empty = width - filteredRowArr.length
                 let zeroes = Array(empty).fill('')
 
                 let newRowArr = zeroes.concat(filteredRowArr)
 
-                squares[i].innerHTML = newRowArr [0]
-                squares[i + 1].innerHTML = newRowArr [1]
-                squares[i + 2].innerHTML = newRowArr [2]
-                squares[i + 3].innerHTML = newRowArr [3]
+                for (let j = i; j < i + width; j++) {
+                    squares[j].innerHTML = newRowArr[j - i]
+                }
+
             }
             changeColor(squares[i])
         }
@@ -111,24 +112,24 @@ function startGame(field) {
 
     function swipeLeft() {
         for (let i = 0; i < width * width; i++) {
-            if (i % 4 === 0) {
-                let totalOne = squares[i].innerHTML
-                let totalTwo = squares[i + 1].innerHTML
-                let totalThree = squares[i + 2].innerHTML
-                let totalFour = squares[i + 3].innerHTML
-                let rowArr = [+totalOne, +totalTwo, +totalThree, +totalFour]
+            if (i % width === 0) {
+
+                rowArr = new Array(width);
+
+                for (let j = i; j < i + width; j++) {
+                    rowArr.push(Number(squares[j].innerHTML))
+                }
 
                 let filteredRowArr = rowArr.filter (num => num)
                 
-                let empty = 4 - filteredRowArr.length
+                let empty = width - filteredRowArr.length
                 let zeroes = Array(empty).fill('')
 
                 let newRowArr = filteredRowArr.concat(zeroes)
 
-                squares[i].innerHTML = newRowArr [0]
-                squares[i + 1].innerHTML = newRowArr [1]
-                squares[i + 2].innerHTML = newRowArr [2]
-                squares[i + 3].innerHTML = newRowArr [3]
+                for (let j = i; j < i + width; j++) {
+                    squares[j].innerHTML = newRowArr[j - i]
+                }
             }
             changeColor(squares[i])
         }
@@ -138,22 +139,21 @@ function startGame(field) {
 
     function swipeDown () {
         for (let i = 0; i < width; i++) {
-            let totalOne = squares[i].innerHTML
-            let totalTwo = squares[i + width].innerHTML
-            let totalThree = squares[i + (width * 2)].innerHTML
-            let totalFour = squares[i + (width * 3)].innerHTML
-            let colArr = [+totalOne, +totalTwo, +totalThree, +totalFour]
+
+            colArr = new Array(width);
+             
+            for (let j = i; j < width * width; j += width) {
+                colArr.push(Number(squares[j].innerHTML))
+            }
             
             let filteredColArr = colArr.filter (num => num)
-            let empty = 4 - filteredColArr.length
+            let empty = width - filteredColArr.length
             let zeroes = Array (empty).fill ('')
-
             let newColArr = zeroes.concat (filteredColArr)
 
-            squares[i].innerHTML = newColArr [0]
-            squares[i + width].innerHTML = newColArr [1]
-            squares[i + (width * 2)].innerHTML = newColArr [2]
-            squares[i + (width * 3)].innerHTML = newColArr [3]
+            for (let j = i; j < width * width; j += width) {
+                squares[j].innerHTML = newColArr[(j-i) / width]
+            }
         }
         for (let i = 0; i < width * width; i++) {
             changeColor(squares[i])
@@ -164,22 +164,21 @@ function startGame(field) {
 
     function swipeUp () {
         for (let i = 0; i < width; i++) {
-            let totalOne = squares[i].innerHTML
-            let totalTwo = squares[i + width].innerHTML
-            let totalThree = squares[i + (width * 2)].innerHTML
-            let totalFour = squares[i + (width * 3)].innerHTML
-            let colArr = [+totalOne, +totalTwo, +totalThree, +totalFour]
+
+            colArr = new Array(width);
+             
+            for (let j = i; j < width * width; j += width) {
+                colArr.push(Number(squares[j].innerHTML))
+            }
 
             let filteredColArr = colArr.filter (num => num)
-            let empty = 4 - filteredColArr.length
+            let empty = width - filteredColArr.length
             let zeroes = Array (empty).fill ('')
-
             let newColArr = filteredColArr.concat (zeroes)
 
-            squares[i].innerHTML = newColArr [0]
-            squares[i + width].innerHTML = newColArr [1]
-            squares[i + (width * 2)].innerHTML = newColArr [2]
-            squares[i + (width * 3)].innerHTML = newColArr [3]
+            for (let j = i; j < width * width; j += width) {
+                squares[j].innerHTML = newColArr[(j-i) / width]
+            }
         }
         for (let i = 0; i < width * width; i++) {
             changeColor(squares[i])
@@ -189,8 +188,8 @@ function startGame(field) {
     //сложение строк
 
     function concatRow () {
-        for (let i = 0; i < 15; i++) {
-            if ((i % 4 !== 3) && squares[i].innerHTML === squares[i + 1].innerHTML) {
+        for (let i = 0; i < squares.length - 1; i++) {
+            if ((i % width !== width - 1) && squares[i].innerHTML === squares[i + 1].innerHTML) {
                 let concatTotal = Number(squares[i].innerHTML) + Number(squares[i + 1].innerHTML)
                 squares[i].innerHTML = concatTotal
                 squares[i + 1].innerHTML = 0
@@ -205,7 +204,7 @@ function startGame(field) {
     //сложение столбцов
 
     function concatCol () {
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < squares.length - width; i++) {
             if (squares[i].innerHTML === squares[i + width].innerHTML) {
                 let concatTotal = Number(squares[i].innerHTML) + Number(squares[i + width].innerHTML)
                 squares[i].innerHTML = concatTotal
@@ -282,12 +281,12 @@ function startGame(field) {
                 count++
             }
         }
-        for (let i = 0; i < 15; i++) {
-            if ((i % 4 !== 3) && squares[i].innerHTML === squares[i + 1].innerHTML) {
+        for (let i = 0; i < squares.length - 1; i++) {
+            if ((i % width !== width - 1) && squares[i].innerHTML === squares[i + 1].innerHTML) {
                 count++
             }
         }
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < squares.length - width; i++) {
             if (squares[i].innerHTML === squares[i + width].innerHTML) {
                 count++
             }
