@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => startGame(5))
 
 function startGame(field) {
     let gridView = document.querySelector('.grid')
+
+    // Объекты стилизаций
     
     const CHANGE_COLOR = {
         "": "rgba(238, 228, 218, 0.35)",
