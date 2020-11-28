@@ -42,7 +42,6 @@ function startGame(field) {
     let count = 0;
 
     //меняю стили
-
     function changeColor(element) {
         element.style.backgroundColor = CHANGE_COLOR[element.textContent]
         element.style.fontSize = CHANGE_FONT[element.textContent]
