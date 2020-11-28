@@ -40,7 +40,7 @@ function startGame(field) {
     let width = field
     let squares = new Array()
     let count = 0;
-
+ 
     //меняю стили
     function changeColor(element) {
         element.style.backgroundColor = CHANGE_COLOR[element.textContent]
