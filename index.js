@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => startGame(4))
+document.addEventListener('DOMContentLoaded', () => startGame(5))
 
 function startGame(field) {
     let gridView = document.querySelector('.grid')
